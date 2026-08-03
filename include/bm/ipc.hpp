@@ -25,12 +25,14 @@ public:
     bool valid() const { return fd_ >= 0; }
     void close();
 
-    // Pulls whatever is readable into the buffer. Returns false on EOF/error.
+    // Pulls whatever is readable into the buffer without blocking. Returns
+    // false on EOF/error. The fd must be non-blocking.
     bool fill();
     // Pops one complete line from the buffer; false if none is buffered yet.
     bool next_line(std::string& out);
-    // Blocking read of one line (fills as needed). false on EOF/error.
-    bool read_line(std::string& out);
+    // Waits for one whole line. `timeout_ms` of -1 waits indefinitely.
+    // Returns false on EOF, error or timeout.
+    bool read_line(std::string& out, int timeout_ms = -1);
 
     // Appends to the outbound queue and tries to flush.
     bool write_line(const std::string& s);

@@ -37,6 +37,10 @@ const char* severity_colour(const std::string& s) {
     return col("\033[34m");
 }
 
+// Long enough to cover a slow blocklist reload, short enough that a wedged
+// daemon does not hang the terminal.
+constexpr int kTimeoutMs = 15000;
+
 struct Client {
     LineConn conn;
 
@@ -51,13 +55,15 @@ struct Client {
         conn = LineConn(fd);
         std::string hello;
         // The greeting arrives unprompted; read past it.
-        return conn.read_line(hello);
+        if (conn.read_line(hello, kTimeoutMs)) return true;
+        std::fprintf(stderr, "backmasterctl: no response from the daemon\n");
+        return false;
     }
 
     bool request(const Json& req, Json& reply) {
         if (!conn.write_line(req.dump())) return false;
         std::string line;
-        while (conn.read_line(line)) {
+        while (conn.read_line(line, kTimeoutMs)) {
             if (line.empty()) continue;
             bool ok = false;
             Json j = Json::parse(line, &ok);
@@ -67,6 +73,7 @@ struct Client {
             reply = j;
             return true;
         }
+        std::fprintf(stderr, "backmasterctl: timed out waiting for a reply\n");
         return false;
     }
 };

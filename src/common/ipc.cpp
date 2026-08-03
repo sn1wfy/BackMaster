@@ -6,6 +6,7 @@
 
 #include <fcntl.h>
 #include <grp.h>
+#include <poll.h>
 #include <pwd.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
@@ -97,10 +98,20 @@ bool LineConn::next_line(std::string& out) {
     return true;
 }
 
-bool LineConn::read_line(std::string& out) {
+bool LineConn::read_line(std::string& out, int timeout_ms) {
     while (true) {
         if (next_line(out)) return true;
-        if (eof_) return false;
+        if (eof_ || fd_ < 0) return false;
+
+        // fill() never blocks, so the wait has to happen here. Doing it the
+        // other way round would spin once the socket goes quiet.
+        pollfd pfd{fd_, POLLIN, 0};
+        int rc = ::poll(&pfd, 1, timeout_ms);
+        if (rc < 0) {
+            if (errno == EINTR) continue;
+            return false;
+        }
+        if (rc == 0) return false; // timed out
         if (!fill() && eof_) return next_line(out);
     }
 }
@@ -148,6 +159,8 @@ int ipc_connect(const std::string& path) {
         ::close(fd);
         return -1;
     }
+    // LineConn::fill() assumes it can read without blocking.
+    set_nonblock(fd, true);
     return fd;
 }
 
