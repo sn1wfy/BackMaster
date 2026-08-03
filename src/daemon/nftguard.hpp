@@ -38,6 +38,9 @@ public:
     // Human-readable `nft list table` output.
     std::string dump_ruleset() const;
 
+    // The ruleset this config would install, without touching the kernel.
+    static std::string preview_ruleset(const Config& cfg) { return build_ruleset(cfg); }
+
 private:
     static std::string build_ruleset(const Config& cfg);
     static bool apply_script(const std::string& script, std::string* err);

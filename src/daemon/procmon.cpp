@@ -319,12 +319,14 @@ void ProcMonitor::on_exec(int pid, int64_t now) {
     int64_t guard_started = 0;
     std::string chain;
     bool newly_guarded = false;
+    bool replaced_in_place = false;
 
     {
         std::lock_guard lock(mu_);
         auto& rec = procs_[pid];
         rec.pid = pid;
         if (rec.ppid == 0) rec.ppid = ppid_of(pid);
+        std::string previous_exe = rec.exe;
         rec.exe = exe;
         rec.comm = basename_of(exe);
         if (rec.seen_ms == 0) rec.seen_ms = now;
@@ -334,6 +336,11 @@ void ProcMonitor::on_exec(int pid, int64_t now) {
             rec.guard_root = pid;
             rec.guard_started_ms = now;
             newly_guarded = true;
+        } else if (rec.guard_root == pid && previous_exe != exe) {
+            // The guarded process replaced its own image instead of forking.
+            // Without this the payload would inherit the guard root's identity
+            // and every lineage check below would skip it.
+            replaced_in_place = true;
         }
         guard_root = rec.guard_root;
         guard_started = rec.guard_started_ms;
@@ -362,7 +369,8 @@ void ProcMonitor::on_exec(int pid, int64_t now) {
     if (is_ignored(exe)) return;
 
     // --- Signal 1: a payload binary spawned inside a guarded process tree.
-    if (cfg_.bd_watch_lineage && guard_root && guard_root != pid && is_payload(exe)) {
+    if (cfg_.bd_watch_lineage && guard_root && (guard_root != pid || replaced_in_place) &&
+        is_payload(exe)) {
         bool in_grace = now - guard_started < cfg_.bd_lineage_grace * 1000LL;
         if (!in_grace) {
             maybe_kill(pid, "payload exec under guarded process");
@@ -370,9 +378,13 @@ void ProcMonitor::on_exec(int pid, int64_t now) {
             a.severity = Severity::Critical;
             a.category = Category::Injection;
             a.title = "Exploit payload blocked in a guarded application";
-            a.detail = "A guarded program spawned a command interpreter or downloader. "
-                       "This is the signature of a remote code execution exploit, such as "
-                       "the ones abused in game lobbies.";
+            a.detail = replaced_in_place
+                           ? "A guarded program replaced its own running code with a "
+                             "command interpreter or downloader. This is a remote code "
+                             "execution exploit taking over the process."
+                           : "A guarded program spawned a command interpreter or "
+                             "downloader. This is the signature of a remote code "
+                             "execution exploit, such as the ones abused in game lobbies.";
             a.action = cfg_.bd_kill_on_detect ? "killed" : "detected";
             a.subject = exe;
             a.subject_kind = "path";

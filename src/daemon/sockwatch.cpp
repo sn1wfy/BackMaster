@@ -121,6 +121,12 @@ void SockWatch::scan(int64_t now, bool first_pass) {
             // Loopback-only services from normal binaries are routine noise.
             if (!exposed && !suspicious) continue;
 
+            // An unconnected UDP socket is indistinguishable from an ordinary
+            // client socket -- every QUIC, mDNS and game-voice connection has
+            // one. Only report UDP when the owner is suspicious in its own
+            // right, or when it took a privileged port.
+            if (!s.tcp && !suspicious && s.local_port >= 1024) continue;
+
             Alert a;
             a.action = "detected";
             a.category = Category::Backdoor;

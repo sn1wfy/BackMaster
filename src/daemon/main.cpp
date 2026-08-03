@@ -318,7 +318,9 @@ int main(int argc, char** argv) {
 
     {
         Alert a;
-        a.severity = Severity::Info;
+        // Low rather than Info so it lands in the audit log by default while
+        // staying below the popup threshold.
+        a.severity = Severity::Low;
         a.category = Category::Policy;
         a.title = "BackMaster protection is active";
         a.detail = "Website protection, intrusion prevention and backdoor monitoring "
