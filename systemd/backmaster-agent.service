@@ -1,0 +1,15 @@
+[Unit]
+Description=BackMaster desktop notifier
+Documentation=file:/usr/local/share/doc/backmaster/README.md
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+Type=simple
+# The agent retries on its own, so it does not need to wait for the daemon.
+ExecStart=/usr/local/bin/backmaster-agent
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=graphical-session.target

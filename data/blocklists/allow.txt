@@ -1,0 +1,8 @@
+# BackMaster - exclusions
+#
+# An entry here always wins over every blocklist, including the feeds. This is
+# the file the "Manage Exclusions" button in the popup writes to (by way of
+# user-allow.txt, so your hand-written entries here are never rewritten).
+#
+# Domains and IP addresses are both accepted, one per line. As with the
+# blocklists, a domain also covers its subdomains.

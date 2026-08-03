@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=BackMaster Agent
+GenericName=Security notifier
+Comment=Shows BackMaster protection alerts
+Exec=/usr/local/bin/backmaster-agent
+Icon=security-high
+Terminal=false
+Categories=System;Security;
+X-GNOME-Autostart-enabled=true
+NoDisplay=true

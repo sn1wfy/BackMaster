@@ -1,0 +1,10 @@
+# BackMaster - phishing and credential theft hosts
+# Entries here produce "Website blocked due to phishing".
+#
+# Phishing domains are short lived, so a static list is close to useless.
+# Populate this from a live feed:
+#
+#   sudo tools/update-blocklists.sh
+#
+# which pulls the Phishing Army extended blocklist into phishing-feed.txt
+# alongside this file. Anything you add here by hand survives that refresh.

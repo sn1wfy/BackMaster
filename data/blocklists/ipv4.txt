@@ -1,0 +1,12 @@
+# BackMaster - blocked IP addresses
+#
+# These are loaded into the nftables deny sets, so they are refused in both
+# directions: inbound connection attempts are dropped and outbound connections
+# are rejected immediately.
+#
+# One address per line, IPv4 or IPv6. Addresses added at runtime with
+#   backmasterctl block ip 1.2.3.4
+# are written to user-block.txt instead, so this file stays yours to curate.
+#
+# Auto-blocked port scanners are NOT written here: they expire on their own
+# after [firewall] block_ttl seconds.

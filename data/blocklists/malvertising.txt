@@ -1,0 +1,56 @@
+# BackMaster - malvertising and aggressive ad/tracking networks
+#
+# The file name is the reason shown in the popup, so an entry here produces
+# "Website blocked due to malvertising". Add files named phishing.txt,
+# malware.txt, c2.txt, cryptomining.txt, scam.txt and so on to get the
+# corresponding wording.
+#
+# One domain per line. Subdomains are covered automatically: blocking
+# example.com also blocks ads.example.com. Hosts-file syntax
+# ("0.0.0.0 ads.example.com") is accepted so public feeds can be dropped
+# in unchanged.
+#
+# Run tools/update-blocklists.sh to pull large public feeds into this directory.
+
+# --- ad and tracking networks routinely abused to serve malvertising ---
+doubleclick.net
+googleadservices.com
+googlesyndication.com
+adservice.google.com
+adnxs.com
+adsrvr.org
+rubiconproject.com
+pubmatic.com
+casalemedia.com
+openx.net
+criteo.com
+criteo.net
+taboola.com
+outbrain.com
+revcontent.com
+mgid.com
+zergnet.com
+adblade.com
+contentad.net
+propellerads.com
+popads.net
+popcash.net
+adcash.com
+exoclick.com
+juicyads.com
+trafficjunky.com
+hilltopads.net
+adsterra.com
+adnium.com
+clickadu.com
+onclickads.net
+zeropark.com
+voluumtrk.com
+trafficfactory.biz
+bidvertiser.com
+media.net
+smartadserver.com
+360yield.com
+serving-sys.com
+zedo.com
+undertone.com

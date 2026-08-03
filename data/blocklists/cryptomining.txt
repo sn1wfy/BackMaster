@@ -1,0 +1,23 @@
+# BackMaster - browser cryptojacking pools and miner delivery hosts
+# Entries here produce "Website blocked due to cryptojacking".
+
+coinhive.com
+coin-hive.com
+authedmine.com
+jsecoin.com
+crypto-loot.com
+cryptoloot.pro
+webminepool.com
+webmine.cz
+coinimp.com
+freecontent.stream
+minero.cc
+minexmr.com
+nanopool.org
+supportxmr.com
+moneroocean.stream
+xmrpool.eu
+cryptonight.net
+webminerpool.com
+coinerra.com
+coinblind.com
